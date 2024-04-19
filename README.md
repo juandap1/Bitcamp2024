@@ -13,3 +13,12 @@ Windows:
 
 MacOS/Linux:
 ```source myenv/bin/activate```
+
+## Flow
+
+Word Options
+ - Fire
+ - Cat
+ - Tree
+ - Car
+ - Person
