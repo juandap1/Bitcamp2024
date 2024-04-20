@@ -47,7 +47,6 @@ export default defineComponent({
   },
   data() {
     return {
-      list-of-items: [],
       items: [
         {
           name: "Fried Mozzarella",
