@@ -2,10 +2,12 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated class="navbar">
       <q-toolbar>
-
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+        <div class="header-main">
+          <div class="logo">
+            <img src="logo.png" />
+          </div>
+          <div class="">Flicker</div>
+        </div>
         <a class="login-btn" v-if="!store.loggedIn" @click="login = true">Log In</a>
         <div v-else class="acnt">
           <div class="usr-icon">
@@ -118,5 +120,26 @@ export default defineComponent({
   padding: 10px;
   border-radius: 50%;
   background-color: rgb(255,255,255,0.1);
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.header-main {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 28px;
 }
 </style>
