@@ -11,6 +11,7 @@
   </template>
   <script>
   import { defineComponent } from "vue";
+
   
   export default defineComponent({
     name: "menu-item",
@@ -39,12 +40,12 @@
     methods: {
     incrementCount () {
       this.count++;
-      list-of-items.append(this.name)
+      this.$emit('add')
     },
     decrementCount (){
       if(this.count > 0){
         this.count --;
-        list-of-items.remove(this.name)
+        this.$emit('remove')
       }
     }
   },

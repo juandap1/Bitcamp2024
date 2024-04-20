@@ -5,7 +5,7 @@
     <h2>Appetizers</h2>
     <hr>
     <div class="item-container">
-      <menu-item v-for="m in items" v-bind="m" :key="m" />
+      <menu-item v-for="m in items" v-bind="m" :key="m" @add="add(m)" @remove="remove(m)" />
     </div>
       
 
@@ -27,7 +27,7 @@
       <menu-item v-for="m in Drinks" v-bind="m" :key="m" />
     </div>
     <hr>
-    <button class="submit" onclick="checkout">Check Out</button>
+    <button class="submit" @click="checkout">Check Out</button>
 
   </div>
 
@@ -37,6 +37,7 @@
 import { ref } from "vue";
 import { defineComponent } from "vue";
 import MenuItem from "../components/MenuItem.vue"
+import { useStateStore } from "../stores/state";
 
 export default defineComponent({
   name: "test-test",
@@ -47,6 +48,12 @@ export default defineComponent({
   },
   data() {
     return {
+<<<<<<< Updated upstream
+=======
+
+      foodList: {},
+
+>>>>>>> Stashed changes
       items: [
         {
           name: "Fried Mozzarella",
@@ -138,11 +145,28 @@ export default defineComponent({
     };
   },
   methods: {
+    add(item) {
+      if (this.foodList[item.name] == null) this.foodList[item.name] = {
+        ...item,
+        count: 0
+      }
+      this.foodList[item.name].count ++;
+    },
+    remove(item) {
+      if (this.foodList[item.name].count === 1) delete this.foodList[item.name]
+      else if(this.foodList[item.name].count > 1){
+        this.foodList[item.name].count --;
+      }
+    },
     checkout(){
-
+      useStateStore().foodList = this.foodList;
+      this.$router.push("/billing")
     }
   },
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
   mounted() {},
   components: {MenuItem},
 });
