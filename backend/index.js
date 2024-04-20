@@ -71,7 +71,7 @@ app.get("/remember/:id", async (req, res) => {
     const user = await dbConnect.collection("users").findOne({
       _id: uid
     });
-  res.send(user);
+    res.send(user);
   } catch (err) {
     res.send(err);
   }

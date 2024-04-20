@@ -80,7 +80,7 @@ import { useStateStore } from "src/stores/state";
                     firstName: this.firstName,
                     lastName: this.lastName,
                     psw: this.psw,
-                }).then(function (response) {
+                }).then((response) => {
                     if (response.status == 200) {
                         this.$q.notify({
                             message: 'Successfully Created Account!',

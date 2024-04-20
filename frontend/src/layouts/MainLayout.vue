@@ -51,9 +51,7 @@ export default defineComponent({
       login: false
     };
   },
-  mounted() {
-    this.store.firstName = "Austin"
-  },
+  mounted() {},
   components: {LoginDialog},
 });
 </script>
