@@ -141,7 +141,7 @@ export default defineComponent({
     checkout(){
 
     }
-  }
+  },
 
   mounted() {},
   components: {MenuItem},
