@@ -36,6 +36,8 @@ export default defineComponent({
           }
           setTimeout(() => {this.loading = false}, 1000)
       });
+    } else {
+      this.loading = false;
     }
   },
   components: {},
