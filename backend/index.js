@@ -6,6 +6,8 @@ const cors = require("cors");
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const dbo = require("./db/conn");
+const jdenticon = require("jdenticon");
+const { ObjectId } = require("mongodb");
 
 const corOptions = {
   origin: ["http://localhost:9000"],
@@ -47,7 +49,7 @@ app.get("/login", async (req, res) => {
   const user = await dbConnect.collection("users").findOne({
     $or: [
       {email: req.query.email},
-      {username: req.query.username}
+      {username: req.query.email}
     ]
   });
   if (user != null) {
@@ -60,4 +62,23 @@ app.get("/login", async (req, res) => {
   } else {
     res.status(400).send("User not found")
   }
-})
+});
+
+app.get("/remember/:id", async (req, res) => {
+  try {
+    const uid = new ObjectId(req.params.id);
+    const dbConnect = dbo.getDb();
+    const user = await dbConnect.collection("users").findOne({
+      _id: uid
+    });
+  res.send(user);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.get("/avatar/:id", async (req, res) => {
+  const png = jdenticon.toPng(req.params.id, 200);
+  res.set("Content-Type", "image/png");
+  res.send(png);
+});

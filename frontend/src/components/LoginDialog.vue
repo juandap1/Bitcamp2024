@@ -108,6 +108,7 @@ import { useStateStore } from "src/stores/state";
                         message: 'Successfully Logged In!',
                         color: 'dark'
                     })
+                    useStateStore().setCookie("bitcampusr", response.data._id, 1000);
                     this.$emit('active');
                 }
                 this.reset();
