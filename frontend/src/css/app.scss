@@ -1,4 +1,10 @@
 // app global css in SCSS form
+:root {
+    --secondary: rgb(0, 0, 81);
+    --primary: #ddd;
+    --tertiary: rgb(254, 181, 46);
+}
+
 body {
     background-color: #ddd;
 }
