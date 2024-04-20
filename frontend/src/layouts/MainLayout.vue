@@ -15,7 +15,7 @@
       <router-view />
     </q-page-container>
     <q-dialog v-model="login">
-      <login-dialog />
+      <login-dialog @active="login = false" />
     </q-dialog>
   </q-layout>
 </template>

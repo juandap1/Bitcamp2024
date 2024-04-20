@@ -1,25 +1,51 @@
 <template>
     <div class="login-dialog">
-        <div class="icon">
-            <img src="logo.png" />
-        </div>
-        <div class="welcome">Welcome back</div>
-        <div class="intro">Please enter your details to sign in</div>
-        <div class="q-my-md">
-            <q-input class="l-inp" type="text" v-model="email" outlined dense label="Enter your email or username..." />
-            <q-input  class="l-inp" type="password" v-model="psw" outlined dense label="Enter password..." />
-        </div>
-        <button class="btn">Login</button>
-        <div class="reg-txt">
-            Don't have an account yet? <span class="reg-redir">Sign Up</span>
-        </div>
-        <div class="close-btn" v-close-popup>
-            <q-icon name="fas fa-times" />
-        </div>
+        <template v-if="!regMode">
+            <div class="icon">
+                <img src="logo.png" />
+            </div>
+            <div class="welcome">Welcome back</div>
+            <div class="intro">Please enter your details to sign in</div>
+            <div class="q-my-md">
+                <q-input class="l-inp" type="text" v-model="email" outlined dense label="Enter your email or username..." />
+                <q-input  class="l-inp" type="password" v-model="psw" outlined dense label="Enter password..." />
+            </div>
+            <button class="btn" @click="login">Login</button>
+            <div class="reg-txt">
+                Don't have an account yet? <span class="reg-redir" @click="regMode = true">Sign Up</span>
+            </div>
+            <div class="close-btn" v-close-popup>
+                <q-icon name="fas fa-times" />
+            </div>
+        </template>
+        <template v-else>
+            <div class="icon">
+                <img src="logo.png" />
+            </div>
+            <div class="welcome">Welcome</div>
+            <div class="intro">Please enter your details to create an account!</div>
+            <div class="q-my-md">
+                <q-input class="l-inp" type="email" v-model="email" outlined dense label="Enter your email..." />
+                <q-input class="l-inp" type="text" v-model="username" outlined dense label="Enter your username..." />
+                <q-input class="l-inp" type="text" v-model="firstName" outlined dense label="Enter your first name..." />
+                <q-input class="l-inp" type="text" v-model="lastName" outlined dense label="Enter your last name..." />
+                <q-input  class="l-inp" type="password" v-model="psw" outlined dense label="Enter password..." />
+                <q-input  class="l-inp" type="password" v-model="confirm" outlined dense label="Confirm password..." />
+            </div>
+            <button class="btn" @click="register">Register</button>
+            <div class="reg-txt">
+                Already have an account? <span class="reg-redir" @click="regMode = false">Login</span>
+            </div>
+            <div class="close-btn" v-close-popup>
+                <q-icon name="fas fa-times" />
+            </div>
+        </template>
     </div>
   </template>
   <script>
   import { defineComponent } from "vue";
+  import { api } from "src/boot/axios";
+import { useStateStore } from "src/stores/state";
   
   export default defineComponent({
     name: "Login-Dialog",
@@ -28,11 +54,68 @@
     },
     data() {
       return {
+        regMode: false,
         email: "",
-        psw: ""
+        username: "",
+        firstName: "",
+        lastName: "",
+        psw: "",
+        confirm: ""
       };
     },
-    mounted() {},
+    methods: {
+        reset() {
+            this.email = "";
+            this.username = "";
+            this.lastName = "";
+            this.firstName = "";
+            this.psw = "";
+            this.confirm = "";
+        },
+        register() {
+            if (this.confirm === this.psw){
+                api.post('/register', {
+                    email: this.email,
+                    username: this.username,
+                    firstName: this.firstName,
+                    lastName: this.lastName,
+                    psw: this.psw,
+                }).then(function (response) {
+                    if (response.status == 200) {
+                        this.$q.notify({
+                            message: 'Successfully Created Account!',
+                            color: 'dark'
+                        })
+                        this.regMode = false;
+                    }
+                    this.reset();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            }
+        },
+        login() {
+            api.get("/login", {
+                params: {
+                    email: this.email,
+                    psw: this.psw,
+                },
+            }).then((response) => {
+                if (response.status == 200) {
+                    useStateStore().$patch(response.data);
+                    this.$q.notify({
+                        message: 'Successfully Logged In!',
+                        color: 'dark'
+                    })
+                    this.$emit('active');
+                }
+                this.reset();
+            });
+        }
+    },
+    mounted() {
+    },
     components: {},
   });
   </script>

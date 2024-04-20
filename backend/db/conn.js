@@ -7,7 +7,7 @@ let dbConnection;
 
 module.exports = {
   connectToServer: function (callback) {
-    dbConnection = client.db("College");
+    dbConnection = client.db("Bitcamp");
     console.log("Successfully connected to MongoDB.");
 
     return callback();
