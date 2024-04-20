@@ -1,5 +1,6 @@
 <template>
     <div>
+        THIS IS CONFIRMATION
     </div>
 </template>
   <script>

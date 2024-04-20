@@ -1,6 +1,6 @@
 <template>
     <div>
-hello world!
+        THIS IS BILLING
 
     </div>
 </template>
