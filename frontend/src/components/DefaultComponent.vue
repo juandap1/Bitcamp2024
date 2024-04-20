@@ -1,9 +1,11 @@
-<template></template>
+<template>
+  <div></div>
+</template>
 <script>
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "",
+  name: "test-test",
   setup() {
     return {};
   },
