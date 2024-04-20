@@ -48,12 +48,9 @@ export default defineComponent({
   },
   data() {
     return {
-<<<<<<< Updated upstream
-=======
 
       foodList: {},
 
->>>>>>> Stashed changes
       items: [
         {
           name: "Fried Mozzarella",
@@ -163,10 +160,6 @@ export default defineComponent({
       this.$router.push("/billing")
     }
   },
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
   mounted() {},
   components: {MenuItem},
 });
