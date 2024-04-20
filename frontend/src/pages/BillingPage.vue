@@ -32,6 +32,7 @@
   <script>
   import { defineComponent } from "vue";
   import DefaultOrder from '../components/DefaultOrder.vue';
+  import { useStateStore } from "src/stores/state";
   
   export default defineComponent({
     name: "test-test",
@@ -58,6 +59,7 @@
                 price: 8
             }
         ],
+        
       };
     },
     methods: {
@@ -84,7 +86,12 @@
             return total;
         }
     },
-    mounted() {},
+    mounted() {
+        const foodList = useStateStore().foodList;
+        let parsed = []
+        
+        this.items = parsed;
+    },
     components: {DefaultOrder},
   });
 
