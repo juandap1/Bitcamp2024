@@ -4,7 +4,7 @@
     <div class="main-inner">
       <div class="row">
         <div class="col-6">
-          <div class="q-px-md q-py-lg">
+          <div class="q-px-md">
             <div class="s-lbl">Order</div>
             <q-list bordered separator v-if="store.session != null">
               <DefaultOrder
@@ -28,12 +28,12 @@
             </div>
             <div class="s-bd">
               <div>Tax</div>
-              <div>${{ total * 0.06 }}</div>
+              <div>${{ Math.round(total * 0.06 * 100) / 100 }}</div>
             </div>
             <hr />
             <div class="s-bd lg">
               <div>Total</div>
-              <div>${{ total * 0.06 }}</div>
+              <div>${{ Math.round(total * 1.06 * 100) / 100 }}</div>
             </div>
             <hr />
             <div class="q-py-md q-px-xl q-gutter-sm">
@@ -43,8 +43,15 @@
                 push
                 label="Pay Full"
                 no-caps
-                @click="payFull"
-              />
+              >
+                <q-popup-proxy class="bg-transparent">
+                  <div class="bg-dark q-py-md q-px-xl">
+                    <q-btn class="bg-white text-black" @click="payFull">
+                      Confirm Payment of ${{ total }}?
+                    </q-btn>
+                  </div>
+                </q-popup-proxy>
+              </q-btn>
               <q-btn
                 class="full-width"
                 :ripple="{ center: true }"
@@ -80,14 +87,8 @@ export default defineComponent({
   },
   methods: {
     payFull() {
-      console.log("YOU ARE PAYING THE WHOLE CHECK!!");
-      const total = this.total;
-      const confirmed = confirm("Are you sure you are ready to pay?");
-      if (confirmed) {
-        this.$router.push("/confirmation");
-      }
+      this.$router.push("/confirmation");
     },
-
     splitCheck() {
       console.log("YOU ARE SPLITTING THE CHECK!!!");
     },
@@ -95,7 +96,11 @@ export default defineComponent({
   computed: {
     total() {
       let total = 0;
-
+      if (useStateStore().session?.items != null) {
+        useStateStore().session.items.forEach((x) => {
+          total += x.price * x.count;
+        });
+      }
       return total;
     },
   },

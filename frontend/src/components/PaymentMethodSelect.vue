@@ -57,7 +57,7 @@ export default defineComponent({
   },
   data() {
     return {
-      modal: true,
+      modal: false,
       selected: 0,
     };
   },

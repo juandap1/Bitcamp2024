@@ -12,6 +12,9 @@
       </div>
       <q-icon class="remove" name="fas fa-trash-alt" size="20px" />
     </template>
+    <div v-else class="expand-btn">
+      <q-icon name="fas fa-chevron-down" />
+    </div>
   </div>
 </template>
 <script>
@@ -128,5 +131,11 @@ export default defineComponent({
 
 .def-btn:hover {
   color: rgb(79, 149, 255);
+}
+
+.expand-btn {
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
 }
 </style>
