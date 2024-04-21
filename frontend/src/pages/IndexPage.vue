@@ -1,9 +1,7 @@
 <template>
   <div class="main-page shadow-6">
     <div class="p-title">PAYMENTS</div>
-    <div class="mnth-exp">
-      $314.15
-    </div>
+    <div class="mnth-exp">$314.15</div>
     <div class="m-exp-lbl">APRIL PAYMENTS</div>
     <div class="toolbar">
       <div class="qr-btn">
@@ -17,52 +15,24 @@
         Send
       </q-btn>
       <q-btn class="q-mx-md">
-        <q-icon class="q-mr-sm" name="fas fa-money-check-alt" size="xs"  />
+        <q-icon class="q-mr-sm" name="fas fa-money-check-alt" size="xs" />
         Request
       </q-btn>
     </div>
-    <div v-for="d in sorted.order" class="full-width" :key="d" >
+    <div v-for="d in sorted.order" class="full-width" :key="d">
       <div class="date-lbl">
-          <div>{{ d }}</div>
-          <div>- $220.14</div>
+        <div>{{ d }}</div>
+        <div>{{ dayNet(d) }}</div>
       </div>
-      <past-payment-item v-for="s in sorted[d]"  v-bind="s" :key="s" />
+      <past-payment-item v-for="s in sorted[d]" v-bind="s" :key="s" />
     </div>
   </div>
 </template>
 
 <script>
-import { ref, defineComponent } from 'vue'
+import { ref, defineComponent, computed } from "vue";
 import { useStateStore } from "src/stores/state";
-import PastPaymentItem from '../components/PastPaymentItem.vue';
-
-const samples = [
-  {
-    id: 1,
-    merchantId: "662468dfde20366bf9a210cb",
-    total: 117.28,
-    type: "out",
-    breakdown: [],
-    timestamp: "2024-04-21T00:15:54.130Z",
-  },
-  {
-    id: 2,
-    merchantId: "662460e3de20366bf9a210ca",
-    total: 34.29,
-    preSpl: 138.15,
-    type: "split",
-    breakdown: [],
-    timestamp: "2024-04-21T00:16:54.130Z",
-  },
-  {
-    id: 3,
-    merchantId: "662460e3de20366bf9a210ca",
-    total: 42.0,
-    type: "in",
-    breakdown: [],
-    timestamp: "2024-04-23T00:17:06.756Z"
-  },
-];
+import PastPaymentItem from "../components/PastPaymentItem.vue";
 
 export default defineComponent({
   name: "IndexPage",
@@ -70,38 +40,52 @@ export default defineComponent({
     const store = useStateStore();
     return {
       store,
-      samples,
+      samples: computed(() => store.pastBills),
     };
   },
   data() {
     return {
-      login: false
+      login: false,
     };
   },
   methods: {
     newDay(d, d2) {
       let dt1 = new Date(d);
       let dt2 = new Date(d2);
-      return dt1.getMonth() !== dt2.getMonth() || dt1.getDate() !== dt2.getDate() || dt1.getFullYear() !== dt2.getFullYear();
+      return (
+        dt1.getMonth() !== dt2.getMonth() ||
+        dt1.getDate() !== dt2.getDate() ||
+        dt1.getFullYear() !== dt2.getFullYear()
+      );
     },
     timestamp(d) {
       const dt = new Date(d);
-      return `${dt.getFullYear()}.${dt.getMonth() + 1}.${dt.getDate()}`
-    }
+      return `${dt.getFullYear()}.${dt.getMonth() + 1}.${dt.getDate()}`;
+    },
+    dayNet(d) {
+      let bal = 0;
+      this.sorted[d].forEach((x) => {
+        if (x.type == "in") {
+          bal += x.total;
+        } else {
+          bal -= x.total;
+        }
+      });
+      return `${bal < 0 ? "-" : ""} $${Math.abs(bal)}`;
+    },
   },
   mounted() {},
-  components: {PastPaymentItem},
+  components: { PastPaymentItem },
   computed: {
     sorted() {
-      let ret = this.samples.reduce((acc ,item) => {
+      let ret = this.samples.reduce((acc, item) => {
         const timestamp = this.timestamp(item.timestamp);
         if (acc["order"] == null) acc["order"] = [];
-        if (!acc["order"].includes(timestamp))
-          acc["order"].push(timestamp);
+        if (!acc["order"].includes(timestamp)) acc["order"].push(timestamp);
         if (acc[timestamp] == null) acc[timestamp] = [];
         let inserted = false;
         for (let i = 0; i < acc[timestamp].length; i++) {
-          if (new Date(acc[timestamp][i]) >  new Date(item.timestamp)) {
+          if (new Date(acc[timestamp][i]) > new Date(item.timestamp)) {
             acc[timestamp].splice(i, item);
             inserted = true;
             break;
@@ -110,12 +94,15 @@ export default defineComponent({
         if (!inserted) acc[timestamp].push(item);
         return acc;
       }, {});
-      ret.order.sort((a,b) => {
-        return new Date(b.replace('.', '-')).getTime() - new Date(a.replace('.', ',')).getTime();
-      })
+      ret.order.sort((a, b) => {
+        return (
+          new Date(b.replace(".", "-")).getTime() -
+          new Date(a.replace(".", ",")).getTime()
+        );
+      });
       return ret;
-    }
-  }
+    },
+  },
 });
 </script>
 <style scoped>

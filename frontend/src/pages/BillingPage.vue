@@ -24,16 +24,16 @@
             <div class="s-lbl">Summary</div>
             <div class="s-bd">
               <div>Subtotal</div>
-              <div>${{ total }}</div>
+              <div>${{ subtotal }}</div>
             </div>
             <div class="s-bd">
               <div>Tax</div>
-              <div>${{ Math.round(total * 0.06 * 100) / 100 }}</div>
+              <div>${{ Math.round(subtotal * 0.06 * 100) / 100 }}</div>
             </div>
             <hr />
             <div class="s-bd lg">
               <div>Total</div>
-              <div>${{ Math.round(total * 1.06 * 100) / 100 }}</div>
+              <div>${{ total }}</div>
             </div>
             <hr />
             <div class="q-py-md q-px-xl q-gutter-sm">
@@ -75,7 +75,7 @@ import { useStateStore } from "src/stores/state";
 import PaymentMethodSelect from "../components/PaymentMethodSelect.vue";
 
 export default defineComponent({
-  name: "test-test",
+  name: "BillingPage",
   setup() {
     const store = useStateStore();
     return {
@@ -87,6 +87,10 @@ export default defineComponent({
   },
   methods: {
     payFull() {
+      const newPayment = {
+        ...useStateStore().session,
+        total: this.total,
+      };
       this.$router.push("/confirmation");
     },
     splitCheck() {
@@ -94,7 +98,7 @@ export default defineComponent({
     },
   },
   computed: {
-    total() {
+    subtotal() {
       let total = 0;
       if (useStateStore().session?.items != null) {
         useStateStore().session.items.forEach((x) => {
@@ -102,6 +106,9 @@ export default defineComponent({
         });
       }
       return total;
+    },
+    total() {
+      return Math.round(this.total * 1.06 * 100) / 100;
     },
   },
   mounted() {},

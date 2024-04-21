@@ -10,6 +10,7 @@ export const useStateStore = defineStore("state", {
     defaultOverrides: null,
     session: {
       id: 13131,
+      merchantId: "662460e3de20366bf9a210ca",
       items: [],
     },
     paymentMethods: [
@@ -31,6 +32,33 @@ export const useStateStore = defineStore("state", {
         identifier: "1234567890",
         type: "Bank",
         name: "Capitol One",
+      },
+    ],
+    pastBills: [
+      {
+        id: 1,
+        merchantId: "662468dfde20366bf9a210cb",
+        total: 117.28,
+        type: "out",
+        breakdown: [],
+        timestamp: "2024-04-21T00:15:54.130Z",
+      },
+      {
+        id: 2,
+        merchantId: "662460e3de20366bf9a210ca",
+        total: 34.29,
+        preSpl: 138.15,
+        type: "split",
+        breakdown: [],
+        timestamp: "2024-04-21T00:16:54.130Z",
+      },
+      {
+        id: 3,
+        merchantId: "662460e3de20366bf9a210ca",
+        total: 42.0,
+        type: "in",
+        breakdown: [],
+        timestamp: "2024-04-19T00:17:06.756Z",
       },
     ],
   }),
