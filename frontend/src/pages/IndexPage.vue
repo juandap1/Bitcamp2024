@@ -4,9 +4,9 @@
     <div class="mnth-exp">$314.15</div>
     <div class="m-exp-lbl">APRIL PAYMENTS</div>
     <div class="toolbar">
-      <div class="qr-btn">
+      <div class="qr-btn" @click="modal = true">
         <q-icon class="q-mr-xs" name="fas fa-qrcode" />
-        Scan QR Code
+        My QR Code
       </div>
     </div>
     <div class="toolbar">
@@ -26,6 +26,13 @@
       </div>
       <past-payment-item v-for="s in sorted[d]" v-bind="s" :key="s" />
     </div>
+    <q-dialog v-model="modal" @before-show="getQr">
+      <div class="qr-cont shadow-6">
+        <div class="qr-wrap">
+          <q-img :src="qrCode" />
+        </div>
+      </div>
+    </q-dialog>
   </div>
 </template>
 
@@ -33,6 +40,7 @@
 import { ref, defineComponent, computed } from "vue";
 import { useStateStore } from "src/stores/state";
 import PastPaymentItem from "../components/PastPaymentItem.vue";
+import QRCode from "qrcode";
 
 export default defineComponent({
   name: "IndexPage",
@@ -46,9 +54,25 @@ export default defineComponent({
   data() {
     return {
       login: false,
+      modal: false,
+      qrCode: null,
     };
   },
   methods: {
+    getQr() {
+      QRCode.toDataURL(
+        JSON.stringify({
+          id: useStateStore()._id,
+          name: `${useStateStore().firstName} ${useStateStore().lastName}`,
+        })
+      )
+        .then((url) => {
+          this.qrCode = url;
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
     newDay(d, d2) {
       let dt1 = new Date(d);
       let dt2 = new Date(d2);
@@ -156,5 +180,19 @@ export default defineComponent({
   padding: 0px 15px;
   font-weight: bold;
   color: #888;
+}
+
+.qr-cont {
+  padding: 20px;
+  background-color: white;
+  border-radius: 15px;
+  width: 400px;
+  text-align: center;
+}
+
+.qr-wrap {
+  border: 2px solid black;
+  padding: 5px;
+  border-radius: 7.5px;
 }
 </style>

@@ -8,7 +8,12 @@ export const useStateStore = defineStore("state", {
     lastName: "",
     loadedMerchants: {},
     defaultOverrides: null,
-    session: null,
+    session: {
+      id: 13131,
+      merchantId: "662460e3de20366bf9a210ca",
+      items: [],
+      users: [],
+    },
     paymentMethods: [
       {
         cardNum: 3141,

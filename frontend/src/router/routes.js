@@ -11,13 +11,13 @@ const routes = [
       },
       { path: "menu/:id", component: () => import("pages/MenuPage.vue") },
       {
-        path: "merchant/:id",
+        path: "merchant",
         component: () => import("pages/MerchantQRPage.vue"),
       },
       {
         path: "split/:id",
         component: () => import("pages/SplitPage.vue"),
-      }
+      },
     ],
   },
 

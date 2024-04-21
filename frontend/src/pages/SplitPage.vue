@@ -1,5 +1,5 @@
 <template>
-    <div class="main">
+  <div class="main">
     <div class="heading">Split Bill</div>
     <div class="main-inner">
       <div class="row">
@@ -65,47 +65,48 @@
           </div>
         </div>
 
-
-        <q-btn 
-        class="full-width"
-        :ripple="{center: true}"
-        outline
-        push
-        no-caps
-        label ="Done"
-        @click="doneSplit">
+        <q-btn
+          class="full-width"
+          :ripple="{ center: true }"
+          outline
+          push
+          no-caps
+          label="Done"
+          @click="doneSplit"
+        >
         </q-btn>
         <q-popup-proxy class="bg-transparent">
-                  <div class="bg-dark q-py-md q-px-xl">
-                    <q-btn class="bg-white text-black" @click="payFull">
-                      Confirm Payment of ${{ total }}?
-                    </q-btn>
-                  </div>
-                </q-popup-proxy>
+          <div class="bg-dark q-py-md q-px-xl">
+            <q-btn class="bg-white text-black" @click="payFull">
+              Confirm Payment of ${{ total }}?
+            </q-btn>
+          </div>
+        </q-popup-proxy>
       </div>
     </div>
   </div>
 </template>
-  <script>
+<script>
 import { defineComponent } from "vue";
 import DefaultSplit from "../components/DefaultSplit.vue";
 import { useStateStore } from "src/stores/state";
 import PaymentMethodSelect from "../components/PaymentMethodSelect.vue";
-  
-  export default defineComponent({
-    name: "test-test",
-    setup() {
-      return {};
-    },
-    data() {
-      return {};
-    },
-    methods:{
-        doneSplit(){
 
-        }
-    },
-    computed: {
+export default defineComponent({
+  name: "test-test",
+  setup() {
+    const store = useStateStore();
+    return {
+      store,
+    };
+  },
+  data() {
+    return {};
+  },
+  methods: {
+    doneSplit() {},
+  },
+  computed: {
     subtotal() {
       let total = 0;
       if (useStateStore().session?.items != null) {
@@ -119,7 +120,7 @@ import PaymentMethodSelect from "../components/PaymentMethodSelect.vue";
       return Math.round(this.subtotal * 1.06 * 100) / 100;
     },
   },
-    mounted() {},
-    components: {},
-  });
-  </script>
+  mounted() {},
+  components: {},
+});
+</script>
