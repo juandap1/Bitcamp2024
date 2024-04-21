@@ -6,8 +6,12 @@ export const useStateStore = defineStore('state', {
     _id: "",
     firstName: "",
     lastName: "",
-    foodList: [],
-    loadedMerchants: {}
+    loadedMerchants: {},
+    defaultOverrides: null,
+    session: {
+      id: 13131,
+      items: [],
+    }
   }),
   getters: {
     loggedIn: (state) => {

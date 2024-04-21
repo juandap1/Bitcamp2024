@@ -1,12 +1,12 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="navbar">
+    <q-header elevated class="navbar" :style="cssProps">
       <q-toolbar>
         <div class="header-main">
           <div class="logo">
-            <img src="logo.png" />
+            <img :src="store.defaultOverrides?.logo != null ? store.defaultOverrides.logo : 'logo.png'" />
           </div>
-          <div class="">Flicker</div>
+          <div class="">{{ store.defaultOverrides?.brand != null ? store.defaultOverrides.brand : 'Flicker' }}</div>
         </div>
         <a class="login-btn" v-if="!store.loggedIn" @click="login = true">Log In</a>
         <div v-else class="acnt">
@@ -53,6 +53,19 @@ export default defineComponent({
   },
   mounted() {},
   components: {LoginDialog},
+  computed: {
+    cssProps() {
+      if (useStateStore().defaultOverrides != null) {
+        let obj = {};
+        if (useStateStore().defaultOverrides.text)
+          obj["background-color"] = useStateStore().defaultOverrides.text;
+        if (useStateStore().defaultOverrides.text2)
+          obj["color"] = useStateStore().defaultOverrides.text2;
+        return obj;
+      }
+      return "";
+    }
+  },
 });
 </script>
 <style scoped>

@@ -1,15 +1,20 @@
 <template>
-  <div>
-    <h1> Menu </h1>
-
-    <h2>Appetizers</h2>
-    <hr>
-    <div class="item-container">
-      <menu-item v-for="m in items" v-bind="m" :key="m" @add="add(m)" @remove="remove(m)" />
+  <div class="menu-pg" v-if="merchant != null" :style="cssProps">
+    <h1>The Comfort You Crave</h1>
+    <div class="tabs-cont" v-if="merchant.categories">
+      <div class="tabs-main">
+        <div :class="'tab' + (activeSect == i ? ' active' : '')" v-for="(c, i) in merchant.categories" :key="c" @click="activeSect = i">
+          {{ c.name }}
+          <div class="activeInd"></div>
+        </div>
+      </div>
+      <div class="checkout" @click="checkout">
+        <q-icon name="fas fa-shopping-cart" /> Checkout <span class="item-cnt">{{ itemCount }}</span>
+      </div>
     </div>
-    <hr>
-    <button class="submit" @click="checkout">Check Out</button>
-
+    <div class="item-container">
+      <menu-item v-for="m in merchant.categories[activeSect].items" v-bind="m" :key="m" @add="add(m)" @remove="remove(m)" />
+    </div>
   </div>
 
 
@@ -22,57 +27,128 @@ import { useStateStore } from "../stores/state";
 export default defineComponent({
   name: "MenuPage",
   setup() {
-    return {};
+    return {
+    };
   },
   data() {
     return {
-      foodList: {},
-      items: [],
+      activeSect: 0,
     };
   },
   methods: {
-    add(item) {
-      if (this.foodList[item.name] == null) this.foodList[item.name] = {
-        ...item,
-        count: 0
-      }
-      this.foodList[item.name].count ++;
-    },
-    remove(item) {
-      if (this.foodList[item.name].count === 1) delete this.foodList[item.name]
-      else if(this.foodList[item.name].count > 1){
-        this.foodList[item.name].count --;
-      }
-    },
-    checkout(){
-      useStateStore().foodList = this.foodList;
+    checkout() {
       this.$router.push("/billing")
     }
   },
   mounted() {},
   components: {MenuItem},
+  computed: {
+    merchant() {
+      const id = "662460e3de20366bf9a210ca";
+      const loaded = useStateStore().loadedMerchants[id];
+      if (loaded != null) {
+        useStateStore().defaultOverrides = loaded.colors;
+        useStateStore().defaultOverrides.logo = loaded.avatar;
+        useStateStore().defaultOverrides.brand = loaded.name;
+        return loaded
+      }
+      useStateStore().loadMerchant(id);
+      return null
+    },
+    cssProps() {
+      if (!this.merchant || !this.merchant.colors) return "";
+      return {
+        "--bg": this.merchant.colors.bg,
+        "--txt": this.merchant.colors.text,
+        "--acc": this.merchant.colors.accent
+      }
+    },
+    itemCount() {
+      if (useStateStore().session == null) return 0
+      return useStateStore().session.items.reduce((acc, item) => {
+        acc += item.count;
+        return acc;
+      }, 0);
+    }
+  }
 });
 </script>
 <style scoped>
+.menu-pg {
+  padding: 20px;
+  height: calc(100vh - 50px);
+  background-color: var(--bg);
+}
+
 h1{
-  text-align: center;
-  font-style: italic;
-  font-size: 50px
+  font-size: 50px;
+  color: var(--txt);
 }
-h2{
-  font-size: 30px;
-  font-style: italic;
-  text-align: left;
-  text-indent: 30px;
+
+.tabs-cont {
+  display: flex;
+  padding: 5px 0px;
+  border-bottom: 2px solid #333;
 }
+
+.tabs-main {
+  flex: 1 1 auto;
+  display: flex;
+}
+
+.tab {
+  padding: 5px 20px;
+  font-weight: bold;
+  color: #555;
+  position: relative;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: black;
+}
+
+.activeInd {
+  position: absolute;
+  width: 0px;
+  height: 2px;
+  background-color: var(--acc);
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 0.3s;
+}
+
+.tab:hover:not(.active) .activeInd {
+  width: 10px;
+}
+
+.active .activeInd {
+  width: 20px;
+}
+
+.tab.active {
+  color: black;
+}
+
 .item-container{
   justify-content: space-around;
   display: flex;
+  padding: 20px 0px;
 }
-hr{
-  color: var(--tertiary)
+
+.checkout {
+  border-radius: 5px;
+  padding: 5px 10px;
+  border: 2px solid black;
+  cursor: pointer;
+  font-weight: bold;
 }
-items{
-  color: black;
+
+.item-cnt {
+  background-color: var(--acc);
+  border-radius: 50px;
+  padding: 0px 7.5px;
+  margin-left: 5px;
 }
 </style>
