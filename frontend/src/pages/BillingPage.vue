@@ -108,7 +108,7 @@ export default defineComponent({
       return total;
     },
     total() {
-      return Math.round(this.total * 1.06 * 100) / 100;
+      return Math.round(this.subtotal * 1.06 * 100) / 100;
     },
   },
   mounted() {
