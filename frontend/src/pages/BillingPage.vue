@@ -1,32 +1,38 @@
 <template>
     <div class="main">
-        <div class="heading">
-            Billing
-        </div>
-        <div class="sub-heading">
-            Payment Information
-        </div>
-
-        <div class="sub-heading">
-            Bill:
-        </div>
-
-        <div class="q-pa-md" style="max-width: 350px">
-            <q-list bordered separator>
-                <DefaultOrder v-for="i in items" v-bind="i" :key="i"></DefaultOrder>
-            </q-list>
-        </div>
-        <p>Subtotal: ${{ total }}</p>
-        <p>Total: ${{ total*1.06 }}</p>
-
-        <div class="q-pa-md q-gutter-sm">
-            <q-btn :ripple="{ center: true }" outline push label="Pay Check" no-caps @click="payFull"/>
-            <q-btn :ripple="{ center: true }" outline push label="Split Check" no-caps @click="splitCheck"/>
-        </div>
-
-        
-
-        
+        <div class="heading">Pay Now</div>
+        <div class="row">
+            <div class="col-6">
+                <div class="q-px-md q-py-lg">
+                    <q-list bordered separator v-if="store.session != null">
+                        <DefaultOrder v-for="i in store.session.items" v-bind="i" :key="i"></DefaultOrder>
+                    </q-list>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="summary">
+                    <div class="s-lbl">Summary</div>
+                    <div class="s-bd">
+                        <div>Subtotal</div>
+                        <div>{{ total }}</div>
+                    </div>
+                    <div class="s-bd">
+                        <div>Tax</div>
+                        <div>{{ total * 0.06 }}</div>
+                    </div>
+                    <hr />
+                    <div class="s-bd lg">
+                        <div>Total</div>
+                        <div>{{ total * 0.06 }}</div>
+                    </div>
+                    <hr />
+                    <div class="q-pa-md q-gutter-sm">
+                        <q-btn :ripple="{ center: true }" outline push label="Pay Check" no-caps @click="payFull"/>
+                        <q-btn :ripple="{ center: true }" outline push label="Split Check" no-caps @click="splitCheck"/>
+                    </div>   
+                </div>
+            </div>
+        </div>  
     </div>
 </template>
   <script>
@@ -37,30 +43,13 @@
   export default defineComponent({
     name: "test-test",
     setup() {
-        return {};
+        const store = useStateStore();
+        return {
+            store,
+        };
     },
     data() {
-      return {
-        items: [
-            {
-                name: "Calamari",
-                price: 10
-            },
-            {
-                name: "Pizza",
-                price: 7
-            },
-            {
-                name: "Cheeseburger",
-                price: 12
-            },
-            {
-                name: "Mozzarella Sticks",
-                price: 8
-            }
-        ],
-        
-      };
+      return {};
     },
     methods: {
         payFull(){
@@ -80,17 +69,11 @@
     computed:{
         total(){
             let total = 0;
-            this.items.forEach(element => {
-                total += element.price;
-            });
+            
             return total;
         }
     },
-    mounted() {
-        const foodList = useStateStore().foodList;
-        let parsed = []
-        
-        this.items = parsed;
+    mounted() {   
     },
     components: {DefaultOrder},
   });
@@ -98,20 +81,17 @@
   </script>
 <style scoped>
     .heading {
-        font-size: 70px;
+        font-size: 40px;
         color: var(--secondary);
         background-color: var(--tertiary);
         text-align: center;
+        margin-bottom: 25px;
+        font-weight: 500;
     }
 
     .main{
         background-color: var(--primary);
-        height: 100vh;
-    }
-
-    .sub-heading{
-        font-size: 50px;
-        color: darkslategray;
+        height: calc(100vh - 50px);
     }
 
     .q-btn{
