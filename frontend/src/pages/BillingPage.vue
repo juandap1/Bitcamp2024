@@ -34,7 +34,7 @@
           <div class="summary">
             <template v-if="splitMode">
               <div class="s-lbl">Splitting Among {{ users.length }} People</div>
-              <q-item dense v-for="(u, i) in users" :key="u">
+              <q-item dense v-for="u in users" :key="u">
                 <q-item-section side>
                   <img
                     class="u-ava"
@@ -44,9 +44,6 @@
                 <q-item-section>
                   <div class="usr-name">{{ u.name }}</div>
                   <div class="usr-owes">Subtotal: ${{ 0 }}</div>
-                  <div class="remove" v-if="i !== 0">
-                    <q-icon name="fas fa-trash-alt" />
-                  </div>
                 </q-item-section>
               </q-item>
               <div class="q-py-md">
@@ -74,14 +71,17 @@
                 filled
                 dense
               />
-            <q-item v-for="(u, i) in subtotalDict" :key="u">
-                <q-item-section>
-                    {{ u }} sub-total: ${{ i }}
-                </q-item-section>
-            </q-item>
-            
-
             </div>
+            <template v-if="splitMode && subtotalDict[current]">
+              <div
+                class="s-bd"
+                v-for="u in subtotalDict[current].items"
+                :key="u"
+              >
+                <div>{{ u.name }}</div>
+                <div>${{ u.price }}</div>
+              </div>
+            </template>
             <div class="s-bd">
               <div>Subtotal</div>
               <div>${{ subtotal }}</div>
@@ -195,6 +195,7 @@ export default defineComponent({
           payments: JSON.stringify([newPayment]),
         })
         .then((response) => {
+          useStateStore().session.items = [];
           this.$router.push("/confirmation");
         })
         .catch(function (error) {
@@ -204,29 +205,67 @@ export default defineComponent({
     splitCheck() {
       this.splitMode = true;
     },
-    paySub() {},
+    paySub() {
+      if (this.subtotalDict.hasOwnProperty(undefined)) {
+        this.$q.notify({
+          message: "Choose who pays for every item before paying!",
+          color: "dark",
+        });
+        return;
+      }
+      let payments = [];
+      for (let o in this.subtotalDict) {
+        payments.push({
+          uid: o,
+          merchantId: "662460e3de20366bf9a210ca",
+          type: "out",
+          timestamp: new Date(),
+          total: this.subtotalDict[o].subtotal * 1.06,
+        });
+      }
+      api
+        .post("/bills/insert", {
+          payments: JSON.stringify(payments),
+        })
+        .then((response) => {
+          useStateStore().session.items = [];
+          this.$router.push("/confirmation");
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
   },
   computed: {
     subtotal() {
       let total = 0;
-      if (useStateStore().session?.items != null) {
-        useStateStore().session.items.forEach((x) => {
-          total += x.price * x.count;
-        });
+      if (this.splitMode) {
+        if (this.subtotalDict[this.current] != null) {
+          return (
+            Math.round(this.subtotalDict[this.current].subtotal * 100) / 100
+          );
+        }
+      } else {
+        if (useStateStore().session?.items != null) {
+          useStateStore().session.items.forEach((x) => {
+            total += x.price * x.count;
+          });
+        }
       }
-      return total;
+      return Math.round(total * 100) / 100;
     },
     total() {
       return Math.round(this.subtotal * 1.06 * 100) / 100;
     },
     subtotalDict() {
-        return store.session.items.reduce((acc, item) => {
-            if (acc[item.charge] == null) acc[item.charge] = {subtotal: 0, items: []}
-            acc[item.charge].subtotal += item.price;
-            acc[item.charge].items.push(item);
-            return acc;
-        }, {});
-    }
+      return this.store.session.items.reduce((acc, item) => {
+        if (acc[item.charge] == null)
+          acc[item.charge] = { subtotal: 0, items: [] };
+        acc[item.charge].subtotal += item.price;
+        acc[item.charge].items.push(item);
+        return acc;
+      }, {});
+    },
   },
   mounted() {},
   components: { DefaultOrder, PaymentMethodSelect, QRScanner, DefaultSplit },
