@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 import { api } from "src/boot/axios";
 
-export const useStateStore = defineStore('state', {
+export const useStateStore = defineStore("state", {
   state: () => ({
     _id: "",
     firstName: "",
@@ -11,17 +11,38 @@ export const useStateStore = defineStore('state', {
     session: {
       id: 13131,
       items: [],
-    }
+    },
+    paymentMethods: [
+      {
+        cardNum: 3141,
+        exp: "04/20",
+        type: "Mastercard",
+      },
+      {
+        cardNum: 4202,
+        exp: "04/20",
+        type: "Visa",
+      },
+      {
+        identifier: "mhb9**@v*****n.net",
+        type: "PayPal",
+      },
+      {
+        identifier: "1234567890",
+        type: "Bank",
+        name: "Capitol One",
+      },
+    ],
   }),
   getters: {
     loggedIn: (state) => {
       return state._id != "";
-    }
+    },
   },
   actions: {
     deleteCookie(cname) {
       document.cookie =
-              cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       this.$reset();
     },
     getCookie(cName) {
@@ -41,17 +62,19 @@ export const useStateStore = defineStore('state', {
       document.cookie = cName + "=" + cValue + "; " + expires + "; path=/";
     },
     loadMerchant(id) {
-      if (this.loadedMerchants[id] === 1) return
+      if (this.loadedMerchants[id] === 1) return;
       this.loadedMerchants[id] = 1;
-      api.get("/merchant", {
-        params: {
-            id
-        },
-      }).then((response) => {
+      api
+        .get("/merchant", {
+          params: {
+            id,
+          },
+        })
+        .then((response) => {
           if (response.status == 200) {
-              this.loadedMerchants[id] = response.data;
+            this.loadedMerchants[id] = response.data;
           }
-      });
-    }
+        });
+    },
   },
 });
