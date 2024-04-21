@@ -14,6 +14,10 @@ const routes = [
         path: "merchant/:id",
         component: () => import("pages/MerchantQRPage.vue"),
       },
+      {
+        path: "split/:id",
+        component: () => import("pages/SplitPage.vue"),
+      }
     ],
   },
 

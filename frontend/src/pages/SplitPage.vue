@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+    <div class="main">
     <div class="heading">Pay Now</div>
     <div class="main-inner">
       <div class="row">
@@ -68,106 +68,18 @@
     </div>
   </div>
 </template>
-<script>
-import { defineComponent } from "vue";
-import DefaultOrder from "../components/DefaultOrder.vue";
-import { useStateStore } from "src/stores/state";
-import PaymentMethodSelect from "../components/PaymentMethodSelect.vue";
-
-export default defineComponent({
-  name: "BillingPage",
-  setup() {
-    const store = useStateStore();
-    return {
-      store,
-    };
-  },
-  data() {
-    return {};
-  },
-  methods: {
-    payFull() {
-      const newPayment = {
-        ...useStateStore().session,
-        total: this.total,
-      };
-      this.$router.push("/confirmation");
+  <script>
+  import { defineComponent } from "vue";
+  
+  export default defineComponent({
+    name: "test-test",
+    setup() {
+      return {};
     },
-    splitCheck() {
-        const newPayment = {            // newPayment might be an issue
-        ...useStateStore().session,
-        total: this.total,
-      };
-      this.$router.push("/split");
+    data() {
+      return {};
     },
-  },
-  computed: {
-    subtotal() {
-      let total = 0;
-      if (useStateStore().session?.items != null) {
-        useStateStore().session.items.forEach((x) => {
-          total += x.price * x.count;
-        });
-      }
-      return total;
-    },
-    total() {
-      return Math.round(this.subtotal * 1.06 * 100) / 100;
-    },
-  },
-  mounted() {
-    //if (useStateStore().session == null) this.$router.push("/");
-  },
-  components: { DefaultOrder, PaymentMethodSelect },
-});
-</script>
-<style scoped>
-.heading {
-  font-size: 40px;
-  color: var(--secondary);
-  background-color: var(--tertiary);
-  text-align: center;
-  margin-bottom: 25px;
-  font-weight: 500;
-}
-
-.main {
-  background-color: var(--primary);
-  height: calc(100vh - 50px);
-}
-
-.q-btn {
-  color: var(--secondary);
-}
-
-.main-inner {
-  max-width: 1000px;
-  margin: auto;
-}
-
-.summary {
-  margin: 16px;
-  padding: 10px;
-  border-radius: 10px;
-  background-color: rgb(0, 0, 0, 0.05);
-}
-
-.s-lbl {
-  font-size: 22px;
-}
-
-.s-bd {
-  display: flex;
-  justify-content: space-between;
-  padding: 2px 0px;
-}
-
-.s-bd.lg {
-  font-size: 18px;
-}
-
-hr {
-  border-top: 1px solid #aaa;
-  border-radius: 5px;
-}
-</style>
+    mounted() {},
+    components: {},
+  });
+  </script>
