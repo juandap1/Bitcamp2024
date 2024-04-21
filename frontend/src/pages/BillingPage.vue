@@ -74,6 +74,13 @@
                 filled
                 dense
               />
+            <q-item v-for="(u, i) in subtotalDict" :key="u">
+                <q-item-section>
+                    {{ u }} sub-total: ${{ i }}
+                </q-item-section>
+            </q-item>
+            
+
             </div>
             <div class="s-bd">
               <div>Subtotal</div>
@@ -212,6 +219,14 @@ export default defineComponent({
     total() {
       return Math.round(this.subtotal * 1.06 * 100) / 100;
     },
+    subtotalDict() {
+        return store.session.items.reduce((acc, item) => {
+            if (acc[item.charge] == null) acc[item.charge] = {subtotal: 0, items: []}
+            acc[item.charge].subtotal += item.price;
+            acc[item.charge].items.push(item);
+            return acc;
+        }, {});
+    }
   },
   mounted() {},
   components: { DefaultOrder, PaymentMethodSelect, QRScanner, DefaultSplit },
