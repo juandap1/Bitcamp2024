@@ -77,6 +77,22 @@ app.get("/remember/:id", async (req, res) => {
   }
 });
 
+app.get("/merchant", async (req, res) => {
+  try {
+    const dbConnect = dbo.getDb();
+    const merchant = await dbConnect.collection("merchants").findOne({
+      _id: new ObjectId(req.query.id)
+    });
+    if (merchant) {
+      res.send(merchant);
+    } else {
+      res.status(404).send();
+    }
+  } catch(err) {
+    res.status(400).send(err);
+  }
+});
+
 app.get("/avatar/:id", async (req, res) => {
   const png = jdenticon.toPng(req.params.id, 200);
   res.set("Content-Type", "image/png");

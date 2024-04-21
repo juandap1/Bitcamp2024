@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia';
+import { api } from "src/boot/axios";
 
 export const useStateStore = defineStore('state', {
   state: () => ({
     _id: "",
     firstName: "",
     lastName: "",
-    foodList: []
+    foodList: [],
+    loadedMerchants: {}
   }),
   getters: {
     loggedIn: (state) => {
@@ -34,5 +36,18 @@ export const useStateStore = defineStore('state', {
       const expires = "expires=" + date.toUTCString();
       document.cookie = cName + "=" + cValue + "; " + expires + "; path=/";
     },
+    loadMerchant(id) {
+      if (this.loadedMerchants[id] === 1) return
+      this.loadedMerchants[id] = 1;
+      api.get("/merchant", {
+        params: {
+            id
+        },
+      }).then((response) => {
+          if (response.status == 200) {
+              this.loadedMerchants[id] = response.data;
+          }
+      });
+    }
   },
 });
