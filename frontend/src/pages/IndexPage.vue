@@ -1,5 +1,5 @@
 <template>
-  <div class="main-page shadow-6">
+  <div class="main-page shadow-6" v-if="store._id">
     <div class="p-title">PAYMENTS</div>
     <div class="mnth-exp">$314.15</div>
     <div class="m-exp-lbl">APRIL PAYMENTS</div>

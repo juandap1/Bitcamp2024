@@ -14,6 +14,21 @@
         </div>
       </div>
       <div>
+        <div
+          v-if="
+            store.session &&
+            store.session.users &&
+            store.session.users.length != 0
+          "
+          class="members"
+        >
+          <div>{{ store.session.users.length }} MEMBERS</div>
+          <div>
+            <div class="member-icon" v-for="i in store.session.users" :key="i">
+              <img :src="`http://localhost:3000/avatar/${i}`" />
+            </div>
+          </div>
+        </div>
         <div class="checkout" @click="checkout">
           <q-icon name="fas fa-shopping-cart" /> Checkout
           <span class="item-cnt">{{ itemCount }}</span>
@@ -25,8 +40,6 @@
         v-for="m in merchant.categories[activeSect].items"
         v-bind="m"
         :key="m"
-        @add="add(m)"
-        @remove="remove(m)"
       />
     </div>
   </div>
@@ -40,7 +53,10 @@ import { socket } from "src/boot/websocket-client";
 export default defineComponent({
   name: "MenuPage",
   setup() {
-    return {};
+    const store = useStateStore();
+    return {
+      store,
+    };
   },
   data() {
     return {
@@ -51,6 +67,29 @@ export default defineComponent({
   methods: {
     checkout() {
       this.$router.push("/billing");
+    },
+    add(e) {
+      const check = useStateStore().session.items.find((x) => x.id === e.id);
+      if (check != null) {
+        check.count++;
+      } else {
+        useStateStore().session.items.push({
+          ...e,
+          count: 1,
+        });
+      }
+    },
+    remove(e) {
+      if (e.count > 0) {
+        const check = useStateStore().session.items.findIndex(
+          (x) => x.id === e.id
+        );
+        if (!check == -1) return;
+        if (e.count === 1) useStateStore().session.items.splice(check, 1);
+        else {
+          useStateStore().session.items[check].count--;
+        }
+      }
     },
   },
   mounted() {
@@ -68,7 +107,13 @@ export default defineComponent({
         useStateStore().session.users.push(e);
     });
 
-    socket.off("added").on("added", (e) => {});
+    socket.off("added").on("added", (e) => {
+      if (useStateStore().session._id == e.id) this.add(e.item);
+    });
+
+    socket.off("removed").on("removed", (e) => {
+      if (useStateStore().session._id === e.id) this.remove(e.item);
+    });
   },
   components: { MenuItem },
   computed: {
@@ -179,5 +224,29 @@ h1 {
   border-radius: 50px;
   padding: 0px 7.5px;
   margin-left: 5px;
+}
+
+.members {
+  border-radius: 5px;
+  padding: 5px 10px;
+  background-color: var(--txt);
+  color: white;
+  position: fixed;
+  right: 50px;
+  top: 100px;
+  width: 150px;
+}
+
+.member-icon {
+  display: inline-block;
+  width: 10px;
+  vertical-align: top;
+}
+
+.members img {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: #444;
 }
 </style>

@@ -58,7 +58,9 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.createSession();
+    //this.createSession();
+    this.id = "6624c3cdf488c033aff17b8e";
+    this.loadQr();
   },
   components: {},
   computed: {
