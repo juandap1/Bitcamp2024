@@ -41,6 +41,7 @@ import { ref, defineComponent, computed } from "vue";
 import { useStateStore } from "src/stores/state";
 import PastPaymentItem from "../components/PastPaymentItem.vue";
 import QRCode from "qrcode";
+import { api } from "../boot/axios";
 
 export default defineComponent({
   name: "IndexPage",
@@ -73,6 +74,19 @@ export default defineComponent({
           console.error(err);
         });
     },
+    loadBills() {
+      api
+        .get("/bills", {
+          params: {
+            userid: useStateStore()._id,
+          },
+        })
+        .then((response) => {
+          if (response.status == 200) {
+            useStateStore().pastBills = response.data;
+          }
+        });
+    },
     newDay(d, d2) {
       let dt1 = new Date(d);
       let dt2 = new Date(d2);
@@ -98,10 +112,13 @@ export default defineComponent({
       return `${bal < 0 ? "-" : ""} $${Math.abs(bal)}`;
     },
   },
-  mounted() {},
+  mounted() {
+    this.loadBills();
+  },
   components: { PastPaymentItem },
   computed: {
     sorted() {
+      if (this.samples == null) return [];
       let ret = this.samples.reduce((acc, item) => {
         const timestamp = this.timestamp(item.timestamp);
         if (acc["order"] == null) acc["order"] = [];
@@ -118,12 +135,14 @@ export default defineComponent({
         if (!inserted) acc[timestamp].push(item);
         return acc;
       }, {});
-      ret.order.sort((a, b) => {
-        return (
-          new Date(b.replace(".", "-")).getTime() -
-          new Date(a.replace(".", ",")).getTime()
-        );
-      });
+      if (ret.order != null) {
+        ret.order.sort((a, b) => {
+          return (
+            new Date(b.replace(".", "-")).getTime() -
+            new Date(a.replace(".", ",")).getTime()
+          );
+        });
+      }
       return ret;
     },
   },

@@ -130,28 +130,19 @@ app.get("/avatar/:id", async (req, res) => {
   res.send(png);
 });
 
-app.post("/session/create", async (req, res) => {
+app.post("/bills/insert", async (req, res) => {
   const dbConnect = dbo.getDb();
-  try {
-    const merchant = new ObjectId(req.body.mId);
-    const mInfo = await dbConnect
-      .collection("merchants")
-      .findOne({ _id: merchant });
-    if (mInfo == null) {
-      res.status(400).send();
-    } else {
-      const session = {
-        merchantId: merchant,
-        items: [],
-        users: [],
-        redir: `http://localhost:9000/#/menu/${merchant}`,
-        tip: true,
-        timestamp: new Date(),
-      };
-      const inserted = await dbConnect.collection("session").insertOne(session);
-      res.send(inserted.insertedId);
-    }
-  } catch (err) {
-    res.status(400).send(err);
-  }
+  const toInsert = JSON.parse(req.body.payments);
+  const result = await dbConnect.collection("bills").insertMany(toInsert);
+  res.send(result);
+});
+
+app.get("/bills", async (req, res) => {
+  const dbConnect = dbo.getDb();
+  const user = req.query.userid;
+  const result = await dbConnect
+    .collection("bills")
+    .find({ uid: user })
+    .toArray();
+  res.send(result);
 });

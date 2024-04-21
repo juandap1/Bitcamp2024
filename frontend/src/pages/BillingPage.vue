@@ -148,6 +148,7 @@ import { useStateStore } from "src/stores/state";
 import PaymentMethodSelect from "../components/PaymentMethodSelect.vue";
 import QRScanner from "../components/QRScanner.vue";
 import DefaultSplit from "../components/DefaultSplit.vue";
+import { api } from "../boot/axios";
 
 export default defineComponent({
   name: "BillingPage",
@@ -176,9 +177,22 @@ export default defineComponent({
     },
     payFull() {
       const newPayment = {
+        uid: useStateStore()._id,
+        merchantId: "662460e3de20366bf9a210ca",
+        type: "out",
+        timestamp: new Date(),
         total: this.total,
       };
-      this.$router.push("/confirmation");
+      api
+        .post("/bills/insert", {
+          payments: JSON.stringify([newPayment]),
+        })
+        .then((response) => {
+          this.$router.push("/confirmation");
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
     splitCheck() {
       this.splitMode = true;
