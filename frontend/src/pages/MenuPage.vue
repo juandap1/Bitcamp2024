@@ -13,26 +13,9 @@
           <div class="activeInd"></div>
         </div>
       </div>
-      <div>
-        <div
-          v-if="
-            store.session &&
-            store.session.users &&
-            store.session.users.length != 0
-          "
-          class="members"
-        >
-          <div>{{ store.session.users.length }} MEMBERS</div>
-          <div>
-            <div class="member-icon" v-for="i in store.session.users" :key="i">
-              <img :src="`http://localhost:3000/avatar/${i}`" />
-            </div>
-          </div>
-        </div>
-        <div class="checkout" @click="checkout">
-          <q-icon name="fas fa-shopping-cart" /> Checkout
-          <span class="item-cnt">{{ itemCount }}</span>
-        </div>
+      <div class="checkout" @click="checkout">
+        <q-icon name="fas fa-shopping-cart" /> Checkout
+        <span class="item-cnt">{{ itemCount }}</span>
       </div>
     </div>
     <div class="item-container">
@@ -48,7 +31,6 @@
 import { defineComponent } from "vue";
 import MenuItem from "../components/MenuItem.vue";
 import { useStateStore } from "../stores/state";
-import { socket } from "src/boot/websocket-client";
 
 export default defineComponent({
   name: "MenuPage",
@@ -92,29 +74,7 @@ export default defineComponent({
       }
     },
   },
-  mounted() {
-    socket.emit("join session", {
-      sesId: this.$route.query.session,
-      user: useStateStore()._id,
-    });
-
-    socket.off("init").on("init", (e) => {
-      useStateStore().session = e;
-    });
-
-    socket.off("joined").on("joined", (e) => {
-      if (!useStateStore().session.users.includes(e))
-        useStateStore().session.users.push(e);
-    });
-
-    socket.off("added").on("added", (e) => {
-      if (useStateStore().session._id == e.id) this.add(e.item);
-    });
-
-    socket.off("removed").on("removed", (e) => {
-      if (useStateStore().session._id === e.id) this.remove(e.item);
-    });
-  },
+  mounted() {},
   components: { MenuItem },
   computed: {
     merchant() {

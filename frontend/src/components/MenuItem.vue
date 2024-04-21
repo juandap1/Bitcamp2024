@@ -25,7 +25,6 @@
 <script>
 import { defineComponent } from "vue";
 import { useStateStore } from "../stores/state";
-import { socket } from "src/boot/websocket-client";
 
 export default defineComponent({
   name: "menu-item",
