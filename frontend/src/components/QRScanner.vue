@@ -30,6 +30,7 @@
 <script>
 import { defineComponent } from "vue";
 import { Html5Qrcode } from "html5-qrcode";
+import { useStateStore } from "../stores/state";
 
 export default defineComponent({
   name: "QRSCanner",
@@ -59,6 +60,10 @@ export default defineComponent({
     onScanSuccess(decodedText, decodedResult) {
       // handle the scanned code as you like, for example:
       this.user = JSON.parse(decodedText);
+      if (this.user.id == useStateStore()._id) {
+        this.user = null;
+        return;
+      }
       this.html5QrCode.stop().then((res) => {
         this.html5QrCode.clear();
       });
