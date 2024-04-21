@@ -12,6 +12,7 @@ export const useStateStore = defineStore("state", {
       id: 13131,
       merchantId: "662460e3de20366bf9a210ca",
       items: [],
+      users: [],
     },
     paymentMethods: [
       {

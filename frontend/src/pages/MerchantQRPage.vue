@@ -8,7 +8,7 @@
       <div class="qr-wrap">
         <q-img :src="qrCode" />
       </div>
-      <q-btn class="q-mt-md" @click="$router.push(redir)">
+      <q-btn v-if="id != ''" class="q-mt-md" @click="$router.push(redir)">
         Click Instead
       </q-btn>
     </div>
@@ -18,6 +18,7 @@
 import { defineComponent } from "vue";
 import QRCode from "qrcode";
 import { v4 as uuidv4 } from "uuid";
+import { api } from "../boot/axios";
 
 export default defineComponent({
   name: "MerchantQRPage",
@@ -27,11 +28,12 @@ export default defineComponent({
   data() {
     return {
       qrCode: null,
+      id: "",
     };
   },
   methods: {
     loadQr() {
-      QRCode.toDataURL(`${window.location.origin}/#/${this.redir}`)
+      QRCode.toDataURL(`${window.location.origin}/#${this.redir}`)
         .then((url) => {
           this.qrCode = url;
         })
@@ -39,14 +41,29 @@ export default defineComponent({
           console.error(err);
         });
     },
+    createSession() {
+      api
+        .post("/session/create", {
+          mId: this.$route.params.id,
+        })
+        .then((response) => {
+          if (response.status == 200) {
+            this.id = response.data;
+            this.loadQr();
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
   },
   mounted() {
-    this.loadQr();
+    this.createSession();
   },
   components: {},
   computed: {
     redir() {
-      return `/menu/${this.$route.params.id}?session=${uuidv4()}`;
+      return `/menu/${this.$route.params.id}?session=${this.id}`;
     },
   },
 });

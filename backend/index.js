@@ -111,3 +111,29 @@ app.get("/avatar/:id", async (req, res) => {
   res.set("Content-Type", "image/png");
   res.send(png);
 });
+
+app.post("/session/create", async (req, res) => {
+  const dbConnect = dbo.getDb();
+  try {
+    const merchant = new ObjectId(req.body.mId);
+    const mInfo = await dbConnect
+      .collection("merchants")
+      .findOne({ _id: merchant });
+    if (mInfo == null) {
+      res.status(400).send();
+    } else {
+      const session = {
+        merchantId: merchant,
+        items: [],
+        users: [],
+        redir: `http://localhost:9000/#/menu/${merchant}`,
+        tip: true,
+        timestamp: new Date(),
+      };
+      const inserted = await dbConnect.collection("session").insertOne(session);
+      res.send(inserted.insertedId);
+    }
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
