@@ -44,6 +44,24 @@ app.post("/register", async (req, res) => {
 
 io.on("connection", (socket) => {
   console.log("a user connected");
+
+  socket.on("join session", async (e) => {
+    const dbConnect = dbo.getDb();
+    socket.join(e.sesId);
+    await dbConnect.collection("session").updateOne(
+      { _id: new ObjectId(e.sesId) },
+      {
+        $addToSet: {
+          users: e.user,
+        },
+      }
+    );
+    const cur = await dbConnect
+      .collection("session")
+      .findOne({ _id: new ObjectId(e.sesId) });
+    socket.to(e.sesId).emit("joined", e.user);
+    socket.emit("init", cur);
+  });
 });
 
 dbo.connectToServer(function (err) {

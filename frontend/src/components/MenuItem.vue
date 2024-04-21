@@ -1,95 +1,103 @@
 <template>
-    <div class="food-item">
-      <img :src="img" />
-      <div class="food-name">{{ name }}</div>
-      <div class="food-desc">Ingredients, more info, nutrition, etc...</div>
+  <div class="food-item">
+    <img :src="img" />
+    <div class="food-name">{{ name }}</div>
+    <div class="food-desc">Ingredients, more info, nutrition, etc...</div>
 
-      <div class="food-footer">
-        <div class="price">${{ price }}</div>
-        <div v-if="count == 0 && !approved" class="order-btn" @click="incrementCount">
-          Order Now
-        </div>
-        <div v-else-if="approved"  class="order-btn good">
-          Good Choice!
-        </div>
-        <div v-else class="order-btn def">
-          <q-icon class="inc-btn" @click="decrementCount" name="fas fa-minus" /> <span class="q-mx-sm">{{ count }}</span> <q-icon class="inc-btn" name="fas fa-plus" @click="incrementCount" />
-        </div>
+    <div class="food-footer">
+      <div class="price">${{ price }}</div>
+      <div
+        v-if="count == 0 && !approved"
+        class="order-btn"
+        @click="incrementCount"
+      >
+        Order Now
+      </div>
+      <div v-else-if="approved" class="order-btn good">Good Choice!</div>
+      <div v-else class="order-btn def">
+        <q-icon class="inc-btn" @click="decrementCount" name="fas fa-minus" />
+        <span class="q-mx-sm">{{ count }}</span>
+        <q-icon class="inc-btn" name="fas fa-plus" @click="incrementCount" />
       </div>
     </div>
-  </template>
-  <script>
-  import { defineComponent } from "vue";
+  </div>
+</template>
+<script>
+import { defineComponent } from "vue";
 import { useStateStore } from "../stores/state";
 
-  
-  export default defineComponent({
-    name: "menu-item",
-    props :{
-        id: String,
-        name: {
-            type: String,
-            required: true
-        },
-        img: {
-            type: String,
-            required: true
-        },
-        price: {
-            type: Number,
-            required: true
-        }
+export default defineComponent({
+  name: "menu-item",
+  props: {
+    id: String,
+    name: {
+      type: String,
+      required: true,
     },
-    setup() {
-      const store = useStateStore();
-      return {
-        store,
-      };
+    img: {
+      type: String,
+      required: true,
     },
-    data() {
-      return {
-        approved: false
-      };
+    price: {
+      type: Number,
+      required: true,
     },
-    methods: {
-    incrementCount () {
+  },
+  setup() {
+    const store = useStateStore();
+    return {
+      store,
+    };
+  },
+  data() {
+    return {
+      approved: false,
+    };
+  },
+  methods: {
+    incrementCount() {
       const check = useStateStore().session.items.find((x) => x.id === this.id);
       if (check != null) {
         check.count++;
       } else {
         this.approved = true;
-        setTimeout(() => {this.approved = false}, 1000);
+        setTimeout(() => {
+          this.approved = false;
+        }, 1000);
         useStateStore().session.items.push({
           id: this.id,
           img: this.img,
           price: this.price,
           name: this.name,
           count: 1,
-        })
+        });
       }
     },
-    decrementCount (){
-      if(this.count > 0){
-        const check = useStateStore().session.items.findIndex((x) => x.id === this.id);
+    decrementCount() {
+      if (this.count > 0) {
+        const check = useStateStore().session.items.findIndex(
+          (x) => x.id === this.id
+        );
         if (!check == -1) return;
         if (this.count === 1) useStateStore().session.items.splice(check, 1);
         else {
           useStateStore().session.items[check].count--;
         }
       }
-    }
+    },
   },
-    mounted() {},
-    components: {},
-    computed: {
-      count() {
-        const check = useStateStore().session.items.find((x) => x.id === this.id);
-        if (check == null) return 0
-        return check.count;
-      }
-    }
-  });
-  </script>
+  mounted() {},
+  components: {},
+  computed: {
+    count() {
+      if (useStateStore().session == null) return 0;
+      const check = useStateStore().session.items.find((x) => x.id === this.id);
+      if (check == null) return 0;
+      return check.count;
+    },
+  },
+});
+</script>
 <style scoped>
 .food-item {
   display: flex;
@@ -146,7 +154,7 @@ import { useStateStore } from "../stores/state";
 }
 
 .order-btn.good {
-  background-color: rgb(0,255,0);
+  background-color: rgb(0, 255, 0);
 }
 
 .inc-btn {

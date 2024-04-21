@@ -111,7 +111,9 @@ export default defineComponent({
       return Math.round(this.total * 1.06 * 100) / 100;
     },
   },
-  mounted() {},
+  mounted() {
+    //if (useStateStore().session == null) this.$router.push("/");
+  },
   components: { DefaultOrder, PaymentMethodSelect },
 });
 </script>

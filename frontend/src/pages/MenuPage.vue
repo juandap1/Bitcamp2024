@@ -3,45 +3,74 @@
     <h1>The Comfort You Crave</h1>
     <div class="tabs-cont" v-if="merchant.categories">
       <div class="tabs-main">
-        <div :class="'tab' + (activeSect == i ? ' active' : '')" v-for="(c, i) in merchant.categories" :key="c" @click="activeSect = i">
+        <div
+          :class="'tab' + (activeSect == i ? ' active' : '')"
+          v-for="(c, i) in merchant.categories"
+          :key="c"
+          @click="activeSect = i"
+        >
           {{ c.name }}
           <div class="activeInd"></div>
         </div>
       </div>
-      <div class="checkout" @click="checkout">
-        <q-icon name="fas fa-shopping-cart" /> Checkout <span class="item-cnt">{{ itemCount }}</span>
+      <div>
+        <div class="checkout" @click="checkout">
+          <q-icon name="fas fa-shopping-cart" /> Checkout
+          <span class="item-cnt">{{ itemCount }}</span>
+        </div>
       </div>
     </div>
     <div class="item-container">
-      <menu-item v-for="m in merchant.categories[activeSect].items" v-bind="m" :key="m" @add="add(m)" @remove="remove(m)" />
+      <menu-item
+        v-for="m in merchant.categories[activeSect].items"
+        v-bind="m"
+        :key="m"
+        @add="add(m)"
+        @remove="remove(m)"
+      />
     </div>
   </div>
-
-
 </template>
 <script>
 import { defineComponent } from "vue";
-import MenuItem from "../components/MenuItem.vue"
+import MenuItem from "../components/MenuItem.vue";
 import { useStateStore } from "../stores/state";
+import { socket } from "src/boot/websocket-client";
 
 export default defineComponent({
   name: "MenuPage",
   setup() {
-    return {
-    };
+    return {};
   },
   data() {
     return {
       activeSect: 0,
+      loading: true,
     };
   },
   methods: {
     checkout() {
-      this.$router.push("/billing")
-    }
+      this.$router.push("/billing");
+    },
   },
-  mounted() {},
-  components: {MenuItem},
+  mounted() {
+    socket.emit("join session", {
+      sesId: this.$route.query.session,
+      user: useStateStore()._id,
+    });
+
+    socket.off("init").on("init", (e) => {
+      useStateStore().session = e;
+    });
+
+    socket.off("joined").on("joined", (e) => {
+      if (!useStateStore().session.users.includes(e))
+        useStateStore().session.users.push(e);
+    });
+
+    socket.off("added").on("added", (e) => {});
+  },
+  components: { MenuItem },
   computed: {
     merchant() {
       const id = "662460e3de20366bf9a210ca";
@@ -50,27 +79,27 @@ export default defineComponent({
         useStateStore().defaultOverrides = loaded.colors;
         useStateStore().defaultOverrides.logo = loaded.avatar;
         useStateStore().defaultOverrides.brand = loaded.name;
-        return loaded
+        return loaded;
       }
       useStateStore().loadMerchant(id);
-      return null
+      return null;
     },
     cssProps() {
       if (!this.merchant || !this.merchant.colors) return "";
       return {
         "--bg": this.merchant.colors.bg,
         "--txt": this.merchant.colors.text,
-        "--acc": this.merchant.colors.accent
-      }
+        "--acc": this.merchant.colors.accent,
+      };
     },
     itemCount() {
-      if (useStateStore().session == null) return 0
+      if (useStateStore().session == null) return 0;
       return useStateStore().session.items.reduce((acc, item) => {
         acc += item.count;
         return acc;
       }, 0);
-    }
-  }
+    },
+  },
 });
 </script>
 <style scoped>
@@ -80,7 +109,7 @@ export default defineComponent({
   background-color: var(--bg);
 }
 
-h1{
+h1 {
   font-size: 50px;
   color: var(--txt);
 }
@@ -131,7 +160,7 @@ h1{
   color: black;
 }
 
-.item-container{
+.item-container {
   justify-content: space-around;
   display: flex;
   padding: 20px 0px;
